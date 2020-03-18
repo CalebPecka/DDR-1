@@ -54,7 +54,7 @@ for i in columns[:-1]:
 		X_train_res = X_train
 		y_train_res = y_train
 	else:
-		sm = SMOTE(ratio = 1.0, k_neighbors = 5)
+		sm = SMOTE(ratio = 1.0, k_neighbors = 2)
 		X_train_res, y_train_res = sm.fit_sample(X_train, y_train.ravel())
 
 	#DEFINING PARAMETER RANGE FOR CLF OPTIMIZATION
