@@ -105,4 +105,5 @@ for i in columns[:-1]:
 	plt.title('Receiver Operating Characteristic for ' + i)
 	plt.legend(loc="lower right")
 	plt.savefig(i + 'roc_curve.png')
+	plt.show()
 	plt.close()
