@@ -39,6 +39,14 @@ for i in columns[:-1]:
 
 	y_MU = label_binarize(y_MU, classes=["group1", "group2"])
 	y_WT = label_binarize(y_WT, classes=["group1", "group2"])
+	
+	#ADD NOISY FEATURES TO MAKE THE PROBLEM HARDER
+	random_state = np.random.RandomState(0)
+	n_samples, n_features = X_MU.shape
+	X_MU = np.c_[X_MU, random_state.randn(n_samples, 1 * n_features)]
+
+	n_samples, n_features = X_WT.shape
+	X_WT = np.c_[X_WT, random_state.randn(n_samples, 1 * n_features)]
 
 	#SMOTE PARAMETERIZATION
 	X_MU_train, X_MU_test, y_MU_train, y_MU_test = train_test_split(X_MU, y_MU,test_size=0.3)
