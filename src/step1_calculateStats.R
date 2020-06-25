@@ -5,7 +5,6 @@ library(edgeR)
 args <- commandArgs(trailingOnly = T)
 
 inputFilePath <- args[1]
-usesSymbols <- args[2] #DOES THE INPUT DATA USE SYMBOLS FOR GENE IDENTIFICATION. FALSE INDICATES IT USES ENSG IDENTIFICATION
 
 #PRIMARY INPUT FILE. ASSUMES THAT FIRST N COLUMNS ARE OF 1 GROUP, AND REMAINING ARE STORED AS OTHER
 print("--------------------------------------------------")
@@ -16,35 +15,12 @@ complete <- read.csv(inputFilePath, row.names = 1)
 print("Input file read successfuly - Dimensions of file:")
 print(dim(complete))
 
-if(usesSymbols != "Symbol"){
-  
-  #CONVERT ENSG TO SYMBOL IF APPLICABLE
-  if (usesSymbols == "ENSG")
-  {
-    print("Converting ENSG to Gene IDs.")
-    geneConversion <- read.csv("data/ensg2symbol.csv", row.names = 1, header = F)
-  }
-  
-  #CONVERT ENTREZ TO SYMBOL IF APPLICABLE
-  if (usesSymbols == "Entrez")
-  {
-    print("Converting ENSG to Gene IDs.")
-    geneConversion <- read.csv("data/entrez2symbol.csv", row.names = 1, header = F)
-  }
-  
-  genes <- row.names(complete)
-  symbols <- geneConversion[genes,1]
-  symbID <- symbols[-which(duplicated(symbols))] #REMOVES DUPLICATES
-  complete <- complete[-which(duplicated(symbols)),]
-  row.names(complete) <- symbID #ASSIGNS NEW GENE ROW NAMES
-}
-
 #PROCESSING
 print("Normalizing input table.")
-grp <- as.factor(rep(1, ncol(complete)))
-y <- DGEList(complete, group = grp)
-y <- calcNormFactors(y, method="TMM")
-norm.table <- cpm(y)
+#grp <- as.factor(rep(1, ncol(complete)))
+#y <- DGEList(complete, group = grp)
+#y <- calcNormFactors(y, method="TMM")
+norm.table <- complete
 
 #GENERATES CORE STATISTICS FOR THE NORMALIZED TABLE
 print("Determining core metrics")
@@ -60,6 +36,9 @@ out <- out[!is.infinite(out$MFC),]
 out <- out[!is.na(out$MFC),] #REMOVES NA VALUES WHICH PRODUCE ERRORS IN READING
 
 out <- cbind("genes"= rownames(out), out)
+
+out$MFC <- abs(out$MFC)
+out$cov <- abs(out$cov)
 
 #BINDS WITH GENE NAMES
 print("Writing finalized normal table - final_out.csv")
